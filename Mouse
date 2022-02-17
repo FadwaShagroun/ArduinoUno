@@ -1,0 +1,55 @@
+//declare variables
+#include "Mouse.h" 
+int sensorPin = A0 ;
+int sensorPin1 = A1 ;
+int sensorValue1 = 0 ;
+int sensorValue = 0 ;
+int minima[] = {3072, 1920};  // actual analogRead minima for {x, y}
+int maxima[] = {0, 0};        // actual analogRead maxima for {x, y}
+
+//Set once
+void setup() {
+Mouse.begin();
+Serial.begin(9600);
+}
+
+
+//To read Pin 3 on loop
+void loop() {
+  // put your main code here, to run repeatedly:
+int ClickValue= analogRead (A0);
+
+
+//If statement for mouse to move LEFT when above threshold. 
+if (ClickValue > 710) { Mouse.move(-10, 0 , 0);
+delay (5);
+Mouse.release () ;
+}
+
+// Or if below it won't click
+else {
+  
+  Mouse.release(MOUSE_LEFT);
+
+  delay (10); 
+}
+//To read Pin 3 on loop
+{
+  // put your main code here, to run repeatedly:
+int ClickValue1= analogRead (A1);
+
+
+//If statement for mouse to move RIGHT when above threshold. 
+if (ClickValue1 > 710) { Mouse.move(10, 0 , 0);
+delay (5);
+Mouse.release () ;
+}
+
+// Or if below it won't click
+else {
+  
+  Mouse.release(MOUSE_LEFT);
+
+}
+}
+}
