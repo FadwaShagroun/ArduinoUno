@@ -1,0 +1,66 @@
+int x;
+int Dataisready ;
+
+// -------- Functions --------- //
+
+static inline void initTimer(void) {
+  //timer 1 is initialised
+  TIMSK1 |= (1 << TOIE1); // set as 0 bit
+  TCCR1B = 0b00000011;
+} // set as 64 bit
+
+static inline void initIOPorts(void) {
+  // ports needed are intialised
+  DDRB |= 0b00110000;
+} // sets pins 4 and 5 as output
+
+static inline void initADC(void) {
+  // adc is initialised
+  ADMUX |= (1 << REFS0); // set as bit 6
+  ADCSRA |= (1 << ADPS2) | (1 << ADPS1); // division factor is set 64
+  ADCSRA |= (1 << ADIE); // set as bit 3
+  ADCSRA |= (1 << ADEN); // set as bit 4
+
+}
+
+// ------ Interrupt Service Routine ------ //
+ISR(TIMER1_OVF_vect) {
+
+  // interrupt service routine for timer 1 overflow
+  TCNT1 = 65036; // timer count set as 65036 as readings are taken every 2 ms
+  ADCSRA |= (1 << ADSC); // set as bit 6
+}
+
+ISR(ADC_vect) {
+  //interrupt service routine for ADC it's executed when adc finishes a conversion
+  x = ADC; //adc value stored in variable x
+
+  Dataisready = 1 ;
+
+
+
+}
+
+
+int main(void) {
+  Serial.begin(250000);
+  noInterrupts();
+  initIOPorts();
+  initTimer();
+  initADC();
+  interrupts();
+
+  while (1) {
+    Serial.flush(); // waits for transmission of outgoing serial data to complete
+
+    if (Dataisready == 1) {
+
+      Serial.println (x);
+      Dataisready = 0 ;
+    } //used to set a loop in which new adc value can be intialised
+
+  }
+
+
+  return 0;                            /* This line is never reached */
+}
